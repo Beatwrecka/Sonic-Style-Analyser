@@ -1,20 +1,85 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Sonic Style Analyzer
 
-# Run and deploy your AI Studio app
+Sonic Style Analyzer is a web app for breaking down the sound and production style of a track.
+You can upload an audio file or paste a track link, then generate a structured sonic profile and
+an AI-ready music generation prompt.
 
-This contains everything you need to run your app locally.
+## What It Does
 
-View your app in AI Studio: https://ai.studio/apps/2e5c4df4-8e96-4d2c-b9c0-4c1ffe787cfa
+- Analyzes uploaded audio files (multimodal Gemini flow)
+- Analyzes music links (search-assisted Gemini flow)
+- Returns structured results, including:
+  - Title and artist
+  - Genre and sub-genre
+  - BPM, key, and time signature
+  - Instrumentation
+  - Mood and production techniques
+  - A reusable generation prompt for tools like Suno/Udio
+- Saves analyses to a local in-app library (`localStorage`)
+- Lets you reload and copy previous prompts quickly
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- React 19 + TypeScript
+- Vite
+- Gemini API (`@google/genai`)
+- Lucide icons
 
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ (Node 20+ recommended)
+
+### Install and Run
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+
+   ```bash
+   npm install
+   ```
+
+2. Create a `.env` file in the project root:
+
+   ```bash
+   VITE_GEMINI_API_KEY=your_api_key_here
+   ```
+
+3. Start the dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+4. Open the local URL shown by Vite (usually `http://localhost:3000` or `http://127.0.0.1:3000`).
+
+## Available Scripts
+
+- `npm run dev` - Start the development server
+- `npm run build` - Create a production build
+- `npm run preview` - Preview the production build locally
+- `npm run lint` - Type-check the project (`tsc --noEmit`)
+
+## Project Structure
+
+```text
+.
+├── App.tsx
+├── components/
+│   ├── InputSection.tsx
+│   ├── AnalysisResult.tsx
+│   └── Library.tsx
+├── services/
+│   └── geminiService.ts
+├── constants.ts
+├── types.ts
+├── index.tsx
+├── index.css
+└── index.html
+```
+
+## Notes
+
+- The API key is required only when running analysis actions.
+- `.env` files are ignored by git in this project.
+- For production deployments, consider moving Gemini calls behind a server/API layer to avoid exposing client credentials.
