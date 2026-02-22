@@ -1,0 +1,5 @@
+{
+  "name": "SonicStyle Analyzer",
+  "description": "Analyze any music track or link to get a detailed style profile, BPM, instrumentation, and a generation prompt.",
+  "requestFramePermissions": []
+}
