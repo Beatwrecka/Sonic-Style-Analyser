@@ -2,16 +2,40 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ANALYSIS_SCHEMA, ANALYSIS_SYSTEM_INSTRUCTION } from "../constants";
 import { MusicAnalysis } from "../types";
 
-const apiKey = process.env.API_KEY;
-// We create the client instance lazily or per request to ensure latest key if needed, 
-// but for this simple app, a module-level instance is fine if the env var is set.
-const ai = new GoogleGenAI({ apiKey: apiKey });
+const getApiKey = (): string | undefined => {
+  const viteEnv = (import.meta as ImportMeta & {
+    env?: Record<string, string | undefined>;
+  }).env;
+  const viteKey = viteEnv?.VITE_GEMINI_API_KEY;
+
+  if (viteKey) {
+    return viteKey;
+  }
+
+  if (typeof process !== "undefined" && process.env) {
+    return process.env.GEMINI_API_KEY || process.env.API_KEY;
+  }
+
+  return undefined;
+};
+
+const getAiClient = (): GoogleGenAI => {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error(
+      "Missing Gemini API key. Set VITE_GEMINI_API_KEY in your .env file."
+    );
+  }
+
+  return new GoogleGenAI({ apiKey });
+};
 
 export const analyzeAudioFile = async (
   base64Data: string, 
   mimeType: string
 ): Promise<MusicAnalysis> => {
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview', // Capable of multimodal (audio) input
       contents: {
@@ -46,6 +70,7 @@ export const analyzeAudioFile = async (
 
 export const analyzeLink = async (url: string): Promise<MusicAnalysis> => {
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview', // Can use search tools
       contents: `You are a musicologist. I need you to analyze the track at this link: ${url}.

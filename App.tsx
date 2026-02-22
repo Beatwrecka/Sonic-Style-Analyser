@@ -4,7 +4,7 @@ import { analyzeAudioFile, analyzeLink } from './services/geminiService';
 import InputSection from './components/InputSection';
 import AnalysisResult from './components/AnalysisResult';
 import Library from './components/Library';
-import { AlertCircle, FileAudio, Sparkles, Waves } from 'lucide-react';
+import { AlertCircle, Sparkles, Waves } from 'lucide-react';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -117,95 +117,77 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white font-sans selection:bg-brand-500/30">
-      {/* Background Decor */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl translate-y-1/2"></div>
-      </div>
+    <div className="app-shell">
+      <div className="ambient-light ambient-light--warm" />
+      <div className="ambient-light ambient-light--cool" />
 
-      <div className="relative z-10 container mx-auto px-4 py-12 flex flex-col items-center min-h-screen">
-        
-        {/* Header */}
-        <header className="text-center mb-12 animate-fade-in-down">
-          <div className="inline-flex items-center justify-center p-3 mb-4 rounded-full bg-slate-800/50 border border-slate-700 shadow-xl">
-             <Waves className="text-brand-400 mr-2" size={24} />
-             <span className="text-brand-100 font-mono font-bold tracking-tight">SONIC<span className="text-brand-500">STYLE</span> ANALYZER</span>
+      <div className="app-core">
+        <header className="app-header animate-fade-in-down">
+          <div className="brand-badge">
+            <Waves size={18} />
+            <span className="mono">
+              SONIC<span className="brand-mark">STYLE</span> ANALYZER
+            </span>
+            <span className="brand-led" aria-hidden="true" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-            Deconstruct Any Sound
-          </h1>
-          <p className="text-slate-400 max-w-xl mx-auto text-lg">
-            Upload a track or paste a link. Get a detailed style profile, BPM, and a professional prompt for AI music generators.
+          <h1 className="page-title">Sonic Style Console</h1>
+          <p className="page-subtitle">
+            Upload a track or paste a link to generate a producer-grade style readout, complete with timing, instrumentation, and a model-ready prompt.
           </p>
         </header>
 
-        {/* Alert Toast */}
         {alert && (
-          <div className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 animate-slide-in-right backdrop-blur-md border ${
-            alert.type === 'error' ? 'bg-red-500/20 border-red-500/50 text-red-200' :
-            alert.type === 'success' ? 'bg-green-500/20 border-green-500/50 text-green-200' :
-            'bg-blue-500/20 border-blue-500/50 text-blue-200'
-          }`}>
-            <AlertCircle size={20} />
-            <span className="font-medium">{alert.message}</span>
+          <div className={`alert-toast alert-toast--${alert.type} animate-slide-in-right`}>
+            <AlertCircle size={18} />
+            <span>{alert.message}</span>
           </div>
         )}
 
-        {/* Main Content Area */}
-        <main className="w-full max-w-4xl flex flex-col items-center gap-12 mb-16">
-          
-          {/* Input Section - Only show if no result or if user wants to start over (handled by button below result) */}
-          <InputSection 
-            onAnalyzeFile={handleAnalyzeFile} 
+        <main className="main-deck">
+          <InputSection
+            onAnalyzeFile={handleAnalyzeFile}
             onAnalyzeUrl={handleAnalyzeUrl}
             isLoading={isLoading}
           />
 
-          {/* Loading State */}
           {isLoading && (
-            <div className="text-center py-12 animate-pulse">
-              <div className="relative w-20 h-20 mx-auto mb-6">
-                 <div className="absolute inset-0 border-4 border-slate-700 rounded-full"></div>
-                 <div className="absolute inset-0 border-4 border-t-brand-500 rounded-full animate-spin"></div>
-                 <Sparkles className="absolute inset-0 m-auto text-brand-400 animate-pulse" size={24} />
+            <div className="loading-state animate-fade-in-up">
+              <div className="loading-ring">
+                <Sparkles size={22} />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Analyzing Sonic Characteristics...</h3>
-              <p className="text-slate-400">Identifying instruments, BPM, and mood.</p>
+              <h3 className="loading-title">Analyzing Sonic Characteristics</h3>
+              <p className="loading-subtitle">Parsing rhythm, timbre, mood, and arrangement details.</p>
             </div>
           )}
 
-          {/* Results */}
           {!isLoading && analysisResult && (
-            <div className="w-full animate-fade-in-up">
-              <div className="flex justify-between items-center mb-6 px-2">
-                <h2 className="text-2xl font-bold text-slate-200">Analysis Report</h2>
-                <button 
+            <section className="analysis-stack animate-fade-in-up">
+              <div className="section-head">
+                <h2 className="section-title">Analysis Report</h2>
+                <button
                   onClick={() => setAnalysisResult(null)}
-                  className="text-sm text-slate-400 hover:text-brand-400 transition-colors"
+                  className="text-link"
                 >
                   Analyze Another Track
                 </button>
               </div>
-              <AnalysisResult 
-                data={analysisResult} 
+              <AnalysisResult
+                data={analysisResult}
                 onSave={addToLibrary}
               />
-            </div>
+            </section>
           )}
 
-          {/* Library Section */}
           {!isLoading && (
-            <Library 
-              items={library} 
-              onDelete={removeFromLibrary} 
+            <Library
+              items={library}
+              onDelete={removeFromLibrary}
               onLoad={loadFromLibrary}
             />
           )}
-
         </main>
 
-        <footer className="mt-auto py-6 text-center text-slate-600 text-sm">
+        <footer className="footer">
           <p>© {new Date().getFullYear()} SonicStyle Analyzer. Powered by Gemini 2.0 Flash.</p>
         </footer>
       </div>
