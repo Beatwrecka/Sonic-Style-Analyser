@@ -188,7 +188,7 @@ const App: React.FC = () => {
         </main>
 
         <footer className="footer">
-          <p>© {new Date().getFullYear()} SonicStyle Analyzer. Powered by Gemini 2.0 Flash.</p>
+          <p>© {new Date().getFullYear()} SonicStyle Analyzer. Powered by Gemini 3 Flash.</p>
         </footer>
       </div>
     </div>
