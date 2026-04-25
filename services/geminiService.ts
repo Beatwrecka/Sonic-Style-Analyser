@@ -3,20 +3,14 @@ import { ANALYSIS_SCHEMA, ANALYSIS_SYSTEM_INSTRUCTION } from "../constants";
 import { MusicAnalysis } from "../types";
 
 const getApiKey = (): string | undefined => {
+  // Security Note: We only read VITE_GEMINI_API_KEY from import.meta.env
+  // to prevent accidentally including server-side secrets (like process.env.GEMINI_API_KEY)
+  // in the client-side bundle.
   const viteEnv = (import.meta as ImportMeta & {
     env?: Record<string, string | undefined>;
   }).env;
-  const viteKey = viteEnv?.VITE_GEMINI_API_KEY;
 
-  if (viteKey) {
-    return viteKey;
-  }
-
-  if (typeof process !== "undefined" && process.env) {
-    return process.env.GEMINI_API_KEY || process.env.API_KEY;
-  }
-
-  return undefined;
+  return viteEnv?.VITE_GEMINI_API_KEY;
 };
 
 const getAiClient = (): GoogleGenAI => {
