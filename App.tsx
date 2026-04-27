@@ -91,9 +91,13 @@ const App: React.FC = () => {
       const result = await analyzeAudioFile(base64, file.type);
       setAnalysisResult(result);
       showAlert('success', 'Audio analysis complete!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      showAlert('error', error.message || 'Failed to analyze audio.');
+      if (error instanceof Error && error.message.includes("File size too large")) {
+         showAlert('error', error.message);
+      } else {
+         showAlert('error', 'Failed to analyze audio. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -105,12 +109,27 @@ const App: React.FC = () => {
     setAlert(null);
 
     try {
-      const result = await analyzeLink(url);
+      // Validate URL protocol to prevent malicious links
+      let parsedUrl: URL;
+      try {
+        parsedUrl = new URL(url);
+        if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+          throw new Error('Invalid protocol');
+        }
+      } catch (e) {
+        throw new Error('Invalid URL format. Please provide a valid HTTP or HTTPS link.');
+      }
+
+      const result = await analyzeLink(parsedUrl.toString());
       setAnalysisResult(result);
       showAlert('success', 'Link analysis complete!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      showAlert('error', error.message || 'Failed to analyze link.');
+      if (error instanceof Error && error.message.includes('Invalid URL format')) {
+        showAlert('error', error.message);
+      } else {
+        showAlert('error', 'Failed to analyze link. Please check the URL and try again.');
+      }
     } finally {
       setIsLoading(false);
     }
