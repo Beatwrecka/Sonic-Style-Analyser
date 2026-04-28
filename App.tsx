@@ -91,9 +91,17 @@ const App: React.FC = () => {
       const result = await analyzeAudioFile(base64, file.type);
       setAnalysisResult(result);
       showAlert('success', 'Audio analysis complete!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      showAlert('error', error.message || 'Failed to analyze audio.');
+      if (error instanceof Error) {
+        if (error.message === "File size too large. Please upload a file smaller than 20MB.") {
+          showAlert('error', error.message);
+        } else {
+          showAlert('error', 'Failed to analyze audio. An unexpected error occurred.');
+        }
+      } else {
+        showAlert('error', 'Failed to analyze audio. An unexpected error occurred.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -105,12 +113,25 @@ const App: React.FC = () => {
     setAlert(null);
 
     try {
+      const parsedUrl = new URL(url);
+      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+        throw new Error("Invalid URL protocol. Only http and https are allowed.");
+      }
+
       const result = await analyzeLink(url);
       setAnalysisResult(result);
       showAlert('success', 'Link analysis complete!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      showAlert('error', error.message || 'Failed to analyze link.');
+      if (error instanceof Error) {
+        if (error.message === "Invalid URL protocol. Only http and https are allowed.") {
+          showAlert('error', error.message);
+        } else {
+          showAlert('error', 'Failed to analyze link. An unexpected error occurred.');
+        }
+      } else {
+        showAlert('error', 'Failed to analyze link. An unexpected error occurred.');
+      }
     } finally {
       setIsLoading(false);
     }

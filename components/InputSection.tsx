@@ -138,6 +138,7 @@ const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl
                   className="url-input"
                   required
                   disabled={isLoading}
+                  maxLength={2048}
                 />
               </div>
               <p className="url-help">
