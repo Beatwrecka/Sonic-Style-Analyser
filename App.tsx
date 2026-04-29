@@ -87,6 +87,10 @@ const App: React.FC = () => {
         throw new Error("File size too large. Please upload a file smaller than 20MB.");
       }
       
+      if (!file.type.startsWith('audio/')) {
+        throw new Error("Invalid file type. Please upload an audio file.");
+      }
+
       const base64 = await fileToBase64(file);
       const result = await analyzeAudioFile(base64, file.type);
       setAnalysisResult(result);
@@ -95,6 +99,8 @@ const App: React.FC = () => {
       console.error(error);
       if (error instanceof Error) {
         if (error.message === "File size too large. Please upload a file smaller than 20MB.") {
+          showAlert('error', error.message);
+        } else if (error.message === "Invalid file type. Please upload an audio file.") {
           showAlert('error', error.message);
         } else {
           showAlert('error', 'Failed to analyze audio. An unexpected error occurred.');
