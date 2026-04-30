@@ -118,13 +118,24 @@ const App: React.FC = () => {
         throw new Error("Invalid URL protocol. Only http and https are allowed.");
       }
 
+      const allowedDomains = [
+        'youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be',
+        'spotify.com', 'open.spotify.com',
+        'soundcloud.com', 'www.soundcloud.com'
+      ];
+
+      if (!allowedDomains.includes(parsedUrl.hostname)) {
+        throw new Error("Security policy: Only YouTube, Spotify, and SoundCloud links are permitted.");
+      }
+
       const result = await analyzeLink(url);
       setAnalysisResult(result);
       showAlert('success', 'Link analysis complete!');
     } catch (error: unknown) {
       console.error(error);
       if (error instanceof Error) {
-        if (error.message === "Invalid URL protocol. Only http and https are allowed.") {
+        if (error.message === "Invalid URL protocol. Only http and https are allowed." ||
+            error.message === "Security policy: Only YouTube, Spotify, and SoundCloud links are permitted.") {
           showAlert('error', error.message);
         } else {
           showAlert('error', 'Failed to analyze link. An unexpected error occurred.');
