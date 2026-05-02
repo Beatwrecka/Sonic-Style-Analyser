@@ -40,7 +40,13 @@ const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+      if (file.type.startsWith('audio/')) {
+        setSelectedFile(file);
+      } else {
+        alert('Please upload an audio file.');
+        e.target.value = ''; // Reset input
+      }
     }
   };
 
