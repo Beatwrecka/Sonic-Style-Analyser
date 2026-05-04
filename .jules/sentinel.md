@@ -11,3 +11,8 @@
 **Vulnerability:** The application was using raw `console.error` to log unhandled exceptions directly to the browser console. This could expose internal stack traces and application paths to end users. Furthermore, file uploads were not explicitly validated for an `audio/` MIME type before processing, posing a risk of malicious file handling.
 **Learning:** Raw `console` methods should not be used for error handling in production client-side code as they can leak sensitive details. Unvalidated file uploads can allow arbitrary files to be passed to backend processing APIs.
 **Prevention:** Always use a centralized logging utility that sanitizes error objects in production (`import.meta.env.DEV` check) to prevent stack trace leakage. Always validate that uploaded files explicitly start with the expected MIME type (e.g., `audio/`) before processing.
+
+## 2025-05-04 - Dev Server Binding
+**Vulnerability:** The Vite configuration used `server: { host: '0.0.0.0' }`, which bound the development server to all available network interfaces. This could unintentionally expose the local development server, and potentially sensitive environment variables, to anyone on the same local network.
+**Learning:** Binding to `0.0.0.0` in a default config is a common oversight that opens local development environments up to lateral access on public or shared networks (e.g. coffee shop WiFi).
+**Prevention:** Always use `localhost` (the default) for the development server host unless explicit network access is required, in which case it should be explicitly passed as a CLI flag (`--host`) by the developer when needed.
