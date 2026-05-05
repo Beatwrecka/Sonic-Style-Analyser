@@ -1,6 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ANALYSIS_SCHEMA, ANALYSIS_SYSTEM_INSTRUCTION } from "../constants";
 import { MusicAnalysis } from "../types";
+import { logger } from "./logger";
 
 const getApiKey = (): string | undefined => {
   // Security Note: We only read VITE_GEMINI_API_KEY from import.meta.env
@@ -57,7 +58,7 @@ export const analyzeAudioFile = async (
     }
     throw new Error("No response text generated");
   } catch (error) {
-    console.error("Audio Analysis Error:", error);
+    logger.error("Audio Analysis Error", error);
     throw error;
   }
 };
@@ -95,7 +96,7 @@ export const analyzeLink = async (url: string): Promise<MusicAnalysis> => {
     }
     throw new Error("No response text generated");
   } catch (error) {
-    console.error("Link Analysis Error:", error);
+    logger.error("Link Analysis Error", error);
     throw error;
   }
 };
