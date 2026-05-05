@@ -16,3 +16,8 @@
 **Vulnerability:** The Vite configuration used `server: { host: '0.0.0.0' }`, which bound the development server to all available network interfaces. This could unintentionally expose the local development server, and potentially sensitive environment variables, to anyone on the same local network.
 **Learning:** Binding to `0.0.0.0` in a default config is a common oversight that opens local development environments up to lateral access on public or shared networks (e.g. coffee shop WiFi).
 **Prevention:** Always use `localhost` (the default) for the development server host unless explicit network access is required, in which case it should be explicitly passed as a CLI flag (`--host`) by the developer when needed.
+
+## 2026-05-05 - CSP Header and console.warn Mitigation
+**Vulnerability:** The application was missing Content Security Policy (CSP) headers which is a crucial defense-in-depth mechanism against Cross-Site Scripting (XSS) and other data injection attacks. Additionally, a raw `console.warn` was being used in production to log application state errors (`Invalid library data in local storage`), potentially leaking application internals to end-users.
+**Learning:** Even client-side only applications that heavily rely on standard safe frameworks (like React) should use Content Security Policies to tightly restrict allowable resources and mitigate potential prompt injection or unknown third-party dependency vulnerabilities. All console logging must be routed through centralized sanitization loggers.
+**Prevention:** Add a default restrictive `Content-Security-Policy` via meta tag or HTTP header. Routinely audit all `console.*` calls to ensure they are replaced by the safe centralized logging wrapper (`logger.ts`).
