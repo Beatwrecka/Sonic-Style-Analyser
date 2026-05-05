@@ -9,7 +9,9 @@ export const logger = {
     console.warn(...args);
   },
   error: (message: string, error?: unknown) => {
-    const isDev = import.meta.env?.DEV ?? false;
+    const isDev = (import.meta as ImportMeta & {
+      env?: Record<string, string | undefined> & { DEV?: boolean };
+    }).env?.DEV ?? false;
 
     if (isDev) {
       console.error(message, error);
