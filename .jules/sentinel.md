@@ -16,3 +16,8 @@
 **Vulnerability:** The Vite configuration used `server: { host: '0.0.0.0' }`, which bound the development server to all available network interfaces. This could unintentionally expose the local development server, and potentially sensitive environment variables, to anyone on the same local network.
 **Learning:** Binding to `0.0.0.0` in a default config is a common oversight that opens local development environments up to lateral access on public or shared networks (e.g. coffee shop WiFi).
 **Prevention:** Always use `localhost` (the default) for the development server host unless explicit network access is required, in which case it should be explicitly passed as a CLI flag (`--host`) by the developer when needed.
+
+## 2025-05-04 - Unvalidated Resource Loading and Content Security Policy
+**Vulnerability:** The application was missing a Content Security Policy (CSP), which left it vulnerable to Cross-Site Scripting (XSS) attacks. Without a CSP, an attacker who successfully injects malicious scripts could execute them within the context of the application, potentially stealing sensitive user data or performing unauthorized actions.
+**Learning:** A missing CSP allows browsers to load resources from any source, increasing the attack surface. Implementing a strict CSP is a crucial defense-in-depth measure.
+**Prevention:** Always implement a Content Security Policy (CSP) to restrict the sources from which resources (scripts, styles, fonts, etc.) can be loaded. This mitigates the impact of XSS vulnerabilities by preventing the execution of unauthorized scripts.

@@ -22,7 +22,7 @@ const App: React.FC = () => {
         if (Array.isArray(parsedData)) {
           setLibrary(parsedData);
         } else {
-          console.warn("Invalid library data in local storage. Expected an array.");
+          logger.warn("Invalid library data in local storage. Expected an array.");
         }
       } catch (e) {
         logger.error("Failed to parse library from local storage", e);
