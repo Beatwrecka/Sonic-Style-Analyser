@@ -32,7 +32,12 @@ const App: React.FC = () => {
 
   // Save library to local storage whenever it changes
   useEffect(() => {
-    localStorage.setItem('sonicStyleLibrary', JSON.stringify(library));
+    try {
+      localStorage.setItem('sonicStyleLibrary', JSON.stringify(library));
+    } catch (e: unknown) {
+      console.error("Failed to save library to local storage", e);
+      // We don't show an alert here as it might trigger continuously on changes
+    }
   }, [library]);
 
   const showAlert = (type: AlertState['type'], message: string) => {
@@ -89,6 +94,9 @@ const App: React.FC = () => {
     setAlert(null);
 
     try {
+      if (!file.type.startsWith('audio/')) {
+        throw new Error("Invalid file type. Please upload an audio file.");
+      }
       if (file.size > 20 * 1024 * 1024) {
         throw new Error("File size too large. Please upload a file smaller than 20MB.");
       }
