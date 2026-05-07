@@ -21,3 +21,8 @@
 **Vulnerability:** The application was missing a Content Security Policy (CSP), which left it vulnerable to Cross-Site Scripting (XSS) attacks. Without a CSP, an attacker who successfully injects malicious scripts could execute them within the context of the application, potentially stealing sensitive user data or performing unauthorized actions.
 **Learning:** A missing CSP allows browsers to load resources from any source, increasing the attack surface. Implementing a strict CSP is a crucial defense-in-depth measure.
 **Prevention:** Always implement a Content Security Policy (CSP) to restrict the sources from which resources (scripts, styles, fonts, etc.) can be loaded. This mitigates the impact of XSS vulnerabilities by preventing the execution of unauthorized scripts.
+
+## 2025-05-07 - Prompt Injection Mitigation via URL Normalization
+**Vulnerability:** The application was passing raw, unescaped user `url` inputs directly into the Gemini LLM prompt. This allows an attacker to craft URLs containing spaces, newlines, and prompt-breaking instructions (e.g., `http://example.com/ \n\n Ignore all previous instructions`) to perform Prompt Injection.
+**Learning:** When incorporating user-provided URLs into LLM prompts, raw string inputs can contain control characters that manipulate the LLM's interpretation of the prompt's instructions.
+**Prevention:** Always use the normalized `.href` property of a parsed `URL` object instead of the raw user string. This automatically URL-encodes spaces and control characters, neutralizing many injection vectors by ensuring the input is treated strictly as a URL string rather than structural prompt commands.
