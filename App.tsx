@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MusicAnalysis, AlertState } from './types';
 import { analyzeAudioFile, analyzeLink } from './services/geminiService';
+import { logger } from './services/logger';
 import InputSection from './components/InputSection';
 import AnalysisResult from './components/AnalysisResult';
 import Library from './components/Library';
@@ -17,9 +18,14 @@ const App: React.FC = () => {
     const savedLibrary = localStorage.getItem('sonicStyleLibrary');
     if (savedLibrary) {
       try {
-        setLibrary(JSON.parse(savedLibrary));
+        const parsedData = JSON.parse(savedLibrary);
+        if (Array.isArray(parsedData)) {
+          setLibrary(parsedData);
+        } else {
+          logger.warn("Invalid library data in local storage. Expected an array.");
+        }
       } catch (e) {
-        console.error("Failed to parse library from local storage", e);
+        logger.error("Failed to parse library from local storage", e);
       }
     }
   }, []);
@@ -94,15 +100,28 @@ const App: React.FC = () => {
       if (file.size > 20 * 1024 * 1024) {
         throw new Error("File size too large. Please upload a file smaller than 20MB.");
       }
+
+      if (!file.type.startsWith('audio/')) {
+        throw new Error("Invalid file type. Please upload an audio file.");
+      }
       
+      if (!file.type.startsWith('audio/')) {
+        throw new Error("Invalid file type. Please upload an audio file.");
+      }
+
       const base64 = await fileToBase64(file);
       const result = await analyzeAudioFile(base64, file.type);
       setAnalysisResult(result);
       showAlert('success', 'Audio analysis complete!');
     } catch (error: unknown) {
-      console.error("Audio Analysis Error:", error);
+      logger.error("Audio analysis failed", error);
       if (error instanceof Error) {
-        if (error.message === "File size too large. Please upload a file smaller than 20MB." || error.message === "Invalid file type. Please upload an audio file.") {
+        if (
+          error.message === "File size too large. Please upload a file smaller than 20MB." ||
+          error.message === "Invalid file type. Please upload an audio file."
+        ) {
+          showAlert('error', error.message);
+        } else if (error.message === "Invalid file type. Please upload an audio file.") {
           showAlert('error', error.message);
         } else {
           showAlert('error', 'Failed to analyze audio. An unexpected error occurred.');
@@ -130,7 +149,7 @@ const App: React.FC = () => {
       setAnalysisResult(result);
       showAlert('success', 'Link analysis complete!');
     } catch (error: unknown) {
-      console.error(error);
+      logger.error("Link analysis failed", error);
       if (error instanceof Error) {
         if (error.message === "Invalid URL protocol. Only http and https are allowed.") {
           showAlert('error', error.message);

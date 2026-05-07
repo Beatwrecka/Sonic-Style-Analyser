@@ -45,8 +45,7 @@ const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl
         setSelectedFile(file);
       } else {
         alert('Please upload an audio file.');
-        // Clear the invalid input
-        e.target.value = '';
+        e.target.value = ''; // Reset input
       }
     }
   };

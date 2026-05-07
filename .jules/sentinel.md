@@ -7,7 +7,17 @@
 **Vulnerability:** The application was passing user-provided URLs directly to the backend/API calls without verifying the protocol (e.g., allowing `javascript:`, `file:`, or `data:` schemas). Additionally, generic catch blocks were indiscriminately passing underlying error messages directly to the UI, potentially exposing internal stack traces or API responses.
 **Learning:** Accepting arbitrary URL input can lead to SSRF-like behavior or malicious code execution if the parsing library processes unsafe protocols. Catch-all error handlers often leak internal system state if not properly sanitized before presentation.
 **Prevention:** Always parse and explicitly allow-list accepted protocols (e.g., `http:` and `https:`) before using remote URLs. Implement safe error boundaries that only pass generic or explicitly approved error strings to client interfaces.
-## 2024-05-24 - File Upload Validation Bypass & Error Handling
-**Vulnerability:** File uploads were only validated using the HTML `accept` attribute, which is easily bypassed. This allowed any file type to be processed by `fileToBase64` and sent to the Gemini API, potentially wasting resources or triggering unexpected API behavior. Additionally, the `localStorage.setItem` call did not handle `QuotaExceededError`, which could crash the application.
-**Learning:** Client-side HTML validation is insufficient. File types must be explicitly validated in JavaScript before processing. LocalStorage quotas are finite and calls must be wrapped in try/catch to ensure application stability.
-**Prevention:** Always validate file MIME types (`file.type`) in JavaScript before reading or uploading. Wrap browser storage API calls in error boundaries/try-catch blocks to handle quota limits gracefully without crashing the UI.
+## 2024-05-03 - Stack Trace Leakage and File Upload Validation
+**Vulnerability:** The application was using raw `console.error` to log unhandled exceptions directly to the browser console. This could expose internal stack traces and application paths to end users. Furthermore, file uploads were not explicitly validated for an `audio/` MIME type before processing, posing a risk of malicious file handling.
+**Learning:** Raw `console` methods should not be used for error handling in production client-side code as they can leak sensitive details. Unvalidated file uploads can allow arbitrary files to be passed to backend processing APIs.
+**Prevention:** Always use a centralized logging utility that sanitizes error objects in production (`import.meta.env.DEV` check) to prevent stack trace leakage. Always validate that uploaded files explicitly start with the expected MIME type (e.g., `audio/`) before processing.
+
+## 2025-05-04 - Dev Server Binding
+**Vulnerability:** The Vite configuration used `server: { host: '0.0.0.0' }`, which bound the development server to all available network interfaces. This could unintentionally expose the local development server, and potentially sensitive environment variables, to anyone on the same local network.
+**Learning:** Binding to `0.0.0.0` in a default config is a common oversight that opens local development environments up to lateral access on public or shared networks (e.g. coffee shop WiFi).
+**Prevention:** Always use `localhost` (the default) for the development server host unless explicit network access is required, in which case it should be explicitly passed as a CLI flag (`--host`) by the developer when needed.
+
+## 2025-05-04 - Unvalidated Resource Loading and Content Security Policy
+**Vulnerability:** The application was missing a Content Security Policy (CSP), which left it vulnerable to Cross-Site Scripting (XSS) attacks. Without a CSP, an attacker who successfully injects malicious scripts could execute them within the context of the application, potentially stealing sensitive user data or performing unauthorized actions.
+**Learning:** A missing CSP allows browsers to load resources from any source, increasing the attack surface. Implementing a strict CSP is a crucial defense-in-depth measure.
+**Prevention:** Always implement a Content Security Policy (CSP) to restrict the sources from which resources (scripts, styles, fonts, etc.) can be loaded. This mitigates the impact of XSS vulnerabilities by preventing the execution of unauthorized scripts.
