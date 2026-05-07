@@ -145,7 +145,9 @@ const App: React.FC = () => {
         throw new Error("Invalid URL protocol. Only http and https are allowed.");
       }
 
-      const result = await analyzeLink(url);
+      // Security Enhancement: Use normalized parsedUrl.href to prevent raw
+      // control characters and newlines from causing Prompt Injection in the LLM.
+      const result = await analyzeLink(parsedUrl.href);
       setAnalysisResult(result);
       showAlert('success', 'Link analysis complete!');
     } catch (error: unknown) {
