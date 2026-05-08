@@ -21,3 +21,8 @@
 **Vulnerability:** The application was missing a Content Security Policy (CSP), which left it vulnerable to Cross-Site Scripting (XSS) attacks. Without a CSP, an attacker who successfully injects malicious scripts could execute them within the context of the application, potentially stealing sensitive user data or performing unauthorized actions.
 **Learning:** A missing CSP allows browsers to load resources from any source, increasing the attack surface. Implementing a strict CSP is a crucial defense-in-depth measure.
 **Prevention:** Always implement a Content Security Policy (CSP) to restrict the sources from which resources (scripts, styles, fonts, etc.) can be loaded. This mitigates the impact of XSS vulnerabilities by preventing the execution of unauthorized scripts.
+
+## 2024-05-05 - URL Parser Differential and SSRF
+**Vulnerability:** The application parsed a user-provided URL string to validate its protocol (`http:` or `https:`) but subsequently passed the raw, original string to the API call (`analyzeLink(url)`). This created a parser differential where the validation logic evaluated one version of the URL, while the execution logic potentially processed a different, potentially malformed or dangerous version.
+**Learning:** This is a classic pattern that can lead to Server-Side Request Forgery (SSRF) or bypass validation checks if the raw string contains unescaped characters or exploits parsing inconsistencies between systems.
+**Prevention:** Always use the normalized output from the URL parser (e.g., `parsedUrl.href`) rather than the raw input string when passing URLs downstream to ensure consistent interpretation across the stack.
