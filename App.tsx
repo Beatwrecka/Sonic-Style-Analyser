@@ -145,7 +145,7 @@ const App: React.FC = () => {
         throw new Error("Invalid URL protocol. Only http and https are allowed.");
       }
 
-      const result = await analyzeLink(url);
+      const result = await analyzeLink(parsedUrl.href);
       setAnalysisResult(result);
       showAlert('success', 'Link analysis complete!');
     } catch (error: unknown) {
