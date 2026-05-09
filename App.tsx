@@ -35,7 +35,7 @@ const App: React.FC = () => {
     try {
       localStorage.setItem('sonicStyleLibrary', JSON.stringify(library));
     } catch (e: unknown) {
-      console.error("Failed to save library to local storage", e);
+      logger.error("Failed to save library to local storage", e);
       // We don't show an alert here as it might trigger continuously on changes
     }
   }, [library]);
