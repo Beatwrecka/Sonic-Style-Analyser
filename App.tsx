@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MusicAnalysis, AlertState } from './types';
 import { analyzeAudioFile, analyzeLink } from './services/geminiService';
 import { logger } from './services/logger';
+import { validateAndNormalizeUrl } from './services/urlUtils';
 import InputSection from './components/InputSection';
 import AnalysisResult from './components/AnalysisResult';
 import Library from './components/Library';
@@ -140,18 +141,19 @@ const App: React.FC = () => {
     setAlert(null);
 
     try {
-      const parsedUrl = new URL(url);
-      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-        throw new Error("Invalid URL protocol. Only http and https are allowed.");
-      }
+      const safeUrl = validateAndNormalizeUrl(url);
 
-      const result = await analyzeLink(url);
+      const result = await analyzeLink(safeUrl);
       setAnalysisResult(result);
       showAlert('success', 'Link analysis complete!');
     } catch (error: unknown) {
       logger.error("Link analysis failed", error);
       if (error instanceof Error) {
-        if (error.message === "Invalid URL protocol. Only http and https are allowed.") {
+        if (
+          error.message === "Invalid URL protocol. Only http and https are allowed." ||
+          error.message === "Invalid URL format." ||
+          error.message.startsWith("Unauthorized domain.")
+        ) {
           showAlert('error', error.message);
         } else {
           showAlert('error', 'Failed to analyze link. An unexpected error occurred.');
