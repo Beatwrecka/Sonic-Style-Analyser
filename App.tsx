@@ -197,6 +197,7 @@ const App: React.FC = () => {
           <InputSection
             onAnalyzeFile={handleAnalyzeFile}
             onAnalyzeUrl={handleAnalyzeUrl}
+            onError={(msg) => showAlert('error', msg)}
             isLoading={isLoading}
           />
 

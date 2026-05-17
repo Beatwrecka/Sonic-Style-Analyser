@@ -5,10 +5,11 @@ import { AnalysisMode } from '../types';
 interface InputSectionProps {
   onAnalyzeFile: (file: File) => void;
   onAnalyzeUrl: (url: string) => void;
+  onError: (message: string) => void;
   isLoading: boolean;
 }
 
-const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl, isLoading }) => {
+const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl, onError, isLoading }) => {
   const [mode, setMode] = useState<AnalysisMode>('file');
   const [url, setUrl] = useState('');
   const [dragActive, setDragActive] = useState(false);
@@ -33,10 +34,11 @@ const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl
       if (file.type.startsWith('audio/')) {
         setSelectedFile(file);
       } else {
-        alert('Please upload an audio file.');
+        // Security enhancement: Prevent thread-blocking alerts and use consistent non-blocking UI
+        onError('Please upload an audio file.');
       }
     }
-  }, []);
+  }, [onError]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -44,7 +46,8 @@ const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl
       if (file.type.startsWith('audio/')) {
         setSelectedFile(file);
       } else {
-        alert('Please upload an audio file.');
+        // Security enhancement: Prevent thread-blocking alerts and use consistent non-blocking UI
+        onError('Please upload an audio file.');
         e.target.value = ''; // Reset input
       }
     }
