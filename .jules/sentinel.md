@@ -26,3 +26,8 @@
 **Vulnerability:** The application was parsing external URLs and allowing any domain over HTTP/HTTPS, enabling users to inject arbitrary site content into LLM prompts (Prompt Injection) or trigger Server-Side Request Forgery (SSRF) during the search-assisted Gemini flow if an attacker provided malicious URLs.
 **Learning:** Checking only the protocol of a URL isn't sufficient when incorporating that URL into a backend task or an LLM prompt, as arbitrary domains open vectors for SSRF or prompt injection depending on the parsing backend tool configuration.
 **Prevention:** Always validate external, user-provided URLs against a strict allowlist of domains (e.g., specific target platforms like YouTube, Spotify, SoundCloud) before incorporating them into LLM contexts or backend execution. Centralize this validation logic into utility functions to ensure consistent protection.
+
+## 2025-05-18 - Replacing window.alert() with Non-blocking UI Mechanism
+**Vulnerability:** The application was using the native `window.alert()` function for error handling during file uploads. This blocks the main UI thread and execution flow, potentially leading to client-side denial-of-service (DoS) conditions and inconsistent error presentation.
+**Learning:** Native blocking dialogs like `alert()`, `prompt()`, and `confirm()` should be avoided as they disrupt the application context and can be abused to freeze the interface.
+**Prevention:** Always use the application's centralized, non-blocking `showAlert` UI mechanism (passed down via props) to prevent thread-blocking and ensure secure, consistent error presentation.
