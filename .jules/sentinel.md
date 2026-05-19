@@ -26,3 +26,13 @@
 **Vulnerability:** The application was parsing external URLs and allowing any domain over HTTP/HTTPS, enabling users to inject arbitrary site content into LLM prompts (Prompt Injection) or trigger Server-Side Request Forgery (SSRF) during the search-assisted Gemini flow if an attacker provided malicious URLs.
 **Learning:** Checking only the protocol of a URL isn't sufficient when incorporating that URL into a backend task or an LLM prompt, as arbitrary domains open vectors for SSRF or prompt injection depending on the parsing backend tool configuration.
 **Prevention:** Always validate external, user-provided URLs against a strict allowlist of domains (e.g., specific target platforms like YouTube, Spotify, SoundCloud) before incorporating them into LLM contexts or backend execution. Centralize this validation logic into utility functions to ensure consistent protection.
+
+## 2025-02-28 - Thread-Blocking Native UI Calls
+**Vulnerability:** The application was using the native `window.alert()` method to handle validation errors (e.g., uploading incorrect file types). Native dialogs are synchronous and thread-blocking, meaning they halt all JavaScript execution in the browser tab until dismissed by the user. If an attacker or a script repeatedly triggers this (e.g., via automated bad uploads), it can create a localized Denial of Service (DoS) by rendering the application unusable.
+**Learning:** Using `window.alert()`, `window.confirm()`, or `window.prompt()` for routine error handling in a modern web application is a UX anti-pattern and a minor security/reliability risk due to their blocking nature.
+**Prevention:** Avoid native `window.alert()` for error handling. Prefer using centralized, non-blocking UI notifications (like the application's `showAlert` mechanism) to prevent thread-blocking and ensure consistent error presentation.
+
+## 2025-02-28 - Missing Service-Layer Input Validation
+**Vulnerability:** The application was validating file MIME types on the frontend (`App.tsx`), but the backend service `analyzeAudioFile` in `services/geminiService.ts` lacked its own validation before sending payloads to the Gemini API. If the service were invoked from another context or if the frontend validation were bypassed, arbitrary file types could be processed.
+**Learning:** Relying solely on client-side or UI-level validation violates the principle of Defense in Depth. Core service functions must validate their own inputs, especially when interfacing with external APIs.
+**Prevention:** Always implement Defense in Depth by validating critical inputs (like file MIME types) at the lowest possible service boundary, independent of any UI-level checks.

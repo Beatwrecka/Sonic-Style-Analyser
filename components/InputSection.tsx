@@ -6,9 +6,10 @@ interface InputSectionProps {
   onAnalyzeFile: (file: File) => void;
   onAnalyzeUrl: (url: string) => void;
   isLoading: boolean;
+  onError?: (message: string) => void;
 }
 
-const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl, isLoading }) => {
+const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl, isLoading, onError }) => {
   const [mode, setMode] = useState<AnalysisMode>('file');
   const [url, setUrl] = useState('');
   const [dragActive, setDragActive] = useState(false);
@@ -33,7 +34,7 @@ const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl
       if (file.type.startsWith('audio/')) {
         setSelectedFile(file);
       } else {
-        alert('Please upload an audio file.');
+        onError?.('Please upload an audio file.');
       }
     }
   }, []);
@@ -44,7 +45,7 @@ const InputSection: React.FC<InputSectionProps> = ({ onAnalyzeFile, onAnalyzeUrl
       if (file.type.startsWith('audio/')) {
         setSelectedFile(file);
       } else {
-        alert('Please upload an audio file.');
+        onError?.('Please upload an audio file.');
         e.target.value = ''; // Reset input
       }
     }
