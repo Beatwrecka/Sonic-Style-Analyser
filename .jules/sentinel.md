@@ -26,3 +26,8 @@
 **Vulnerability:** The application was parsing external URLs and allowing any domain over HTTP/HTTPS, enabling users to inject arbitrary site content into LLM prompts (Prompt Injection) or trigger Server-Side Request Forgery (SSRF) during the search-assisted Gemini flow if an attacker provided malicious URLs.
 **Learning:** Checking only the protocol of a URL isn't sufficient when incorporating that URL into a backend task or an LLM prompt, as arbitrary domains open vectors for SSRF or prompt injection depending on the parsing backend tool configuration.
 **Prevention:** Always validate external, user-provided URLs against a strict allowlist of domains (e.g., specific target platforms like YouTube, Spotify, SoundCloud) before incorporating them into LLM contexts or backend execution. Centralize this validation logic into utility functions to ensure consistent protection.
+
+## 2025-05-23 - Defense in Depth: Service-Level Validation
+**Vulnerability:** Input validation (e.g., MIME type checking for audio files) was only performed at the UI layer (`App.tsx`). This allowed the possibility of bypassing the UI and directly interacting with the `analyzeAudioFile` core service with invalid or potentially malicious files, which could then be passed to external APIs.
+**Learning:** Relying solely on client-side UI validation is insufficient for robust security. Core services and backend functions must independently validate their inputs regardless of the caller. This is a fundamental principle of Defense in Depth.
+**Prevention:** Always implement input validation directly within the core service functions (e.g., `services/geminiService.ts`) to ensure data integrity and security at the lowest possible level before making external API requests.
