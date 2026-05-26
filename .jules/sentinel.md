@@ -26,3 +26,8 @@
 **Vulnerability:** The application was parsing external URLs and allowing any domain over HTTP/HTTPS, enabling users to inject arbitrary site content into LLM prompts (Prompt Injection) or trigger Server-Side Request Forgery (SSRF) during the search-assisted Gemini flow if an attacker provided malicious URLs.
 **Learning:** Checking only the protocol of a URL isn't sufficient when incorporating that URL into a backend task or an LLM prompt, as arbitrary domains open vectors for SSRF or prompt injection depending on the parsing backend tool configuration.
 **Prevention:** Always validate external, user-provided URLs against a strict allowlist of domains (e.g., specific target platforms like YouTube, Spotify, SoundCloud) before incorporating them into LLM contexts or backend execution. Centralize this validation logic into utility functions to ensure consistent protection.
+
+## 2025-05-26 - Missing Defense in Depth at Service Boundary
+**Vulnerability:** The `analyzeAudioFile` service function relied entirely on the frontend UI (App.tsx) to validate the MIME type of uploaded files before passing them to the Gemini API. If an attacker bypassed the UI validation, malicious or unexpected file types could be processed.
+**Learning:** Implicitly trusting UI-level validation at the service boundary is a security vulnerability because the UI can be easily bypassed.
+**Prevention:** Implement Defense in Depth by independently validating all input at the service boundary (e.g., throwing an error if the `mimeType` doesn't start with `'audio/'` in `analyzeAudioFile`), regardless of any prior checks in the UI layer.

@@ -30,6 +30,11 @@ export const analyzeAudioFile = async (
   mimeType: string
 ): Promise<MusicAnalysis> => {
   try {
+    // Defense in Depth: Validate mimeType at the service boundary
+    if (!mimeType.startsWith('audio/')) {
+      throw new Error(`Invalid mimeType. Expected 'audio/*', received '${mimeType}'`);
+    }
+
     const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview', // Capable of multimodal (audio) input
