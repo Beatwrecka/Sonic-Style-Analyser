@@ -29,6 +29,12 @@ export const analyzeAudioFile = async (
   base64Data: string, 
   mimeType: string
 ): Promise<MusicAnalysis> => {
+  // Security Note: Defense in depth validation for MIME type
+  // Ensures we only process audio files regardless of client-side UI checks
+  if (!mimeType.startsWith('audio/')) {
+    throw new Error(`Invalid file type: ${mimeType}. Please upload an audio file.`);
+  }
+
   try {
     const ai = getAiClient();
     const response = await ai.models.generateContent({
