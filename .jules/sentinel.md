@@ -31,3 +31,8 @@
 **Vulnerability:** The `analyzeAudioFile` function in `services/geminiService.ts` was relying entirely on UI-level checks in `App.tsx` to validate that uploaded files were actually audio files (`audio/*` MIME type). If the API was called directly or if the UI validation was bypassed, it could attempt to process non-audio files.
 **Learning:** Depending solely on client-side UI validation is insufficient. Core services and backend-facing API wrappers must independently validate their inputs to ensure defense in depth. This prevents unexpected behavior or potential exploitation if the UI layer is circumvented.
 **Prevention:** Always enforce independent input validation at the service layer (e.g., MIME type checks before making external API calls), even if the UI also performs similar checks for user experience.
+
+## 2025-05-30 - UI Thread Blocking and System Spoofing
+**Vulnerability:** The application was using the native browser `alert()` function to display validation errors when an invalid file was uploaded in `InputSection.tsx`. This blocked the main UI thread entirely and could be leveraged by a malicious actor to create annoying loops or mimic native system prompts, degrading user experience and security posture.
+**Learning:** Native blocking dialogs like `alert()` or `confirm()` disrupt the flow of the application and create an unpolished, potentially exploitable vector for annoyance or phishing if they are triggered consistently without rate limits.
+**Prevention:** Avoid using native `window.alert()` for error handling. Always use a centralized, non-blocking UI notification mechanism (like the application's `showAlert`) that provides consistent styling and does not halt JavaScript execution on the main thread.
