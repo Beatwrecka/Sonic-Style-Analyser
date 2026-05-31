@@ -31,3 +31,8 @@
 **Vulnerability:** The `analyzeAudioFile` function in `services/geminiService.ts` was relying entirely on UI-level checks in `App.tsx` to validate that uploaded files were actually audio files (`audio/*` MIME type). If the API was called directly or if the UI validation was bypassed, it could attempt to process non-audio files.
 **Learning:** Depending solely on client-side UI validation is insufficient. Core services and backend-facing API wrappers must independently validate their inputs to ensure defense in depth. This prevents unexpected behavior or potential exploitation if the UI layer is circumvented.
 **Prevention:** Always enforce independent input validation at the service layer (e.g., MIME type checks before making external API calls), even if the UI also performs similar checks for user experience.
+
+## 2026-05-31 - Native Alert UI Blocking
+**Vulnerability:** The application used native `window.alert()` calls in `InputSection.tsx` for error handling. Native alerts block the main UI thread and can be exploited or misused to degrade user experience (a minor Denial of Service via UI lockup). They are also frequently flagged by SAST tools as an insecure or poor coding practice.
+**Learning:** Native blocking dialogs like `alert()` disrupt the asynchronous flow of modern React applications and can be a vector for nuisance UI lockups.
+**Prevention:** Avoid using native `window.alert()` for error handling. Instead, use centralized, non-blocking UI alert mechanisms (such as a toast notification system passed down via props or context) to handle application errors safely and consistently without halting the execution thread.
