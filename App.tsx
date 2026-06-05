@@ -198,6 +198,7 @@ const App: React.FC = () => {
             onAnalyzeFile={handleAnalyzeFile}
             onAnalyzeUrl={handleAnalyzeUrl}
             isLoading={isLoading}
+            onError={(msg) => showAlert('error', msg)}
           />
 
           {isLoading && (
