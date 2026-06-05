@@ -31,3 +31,13 @@
 **Vulnerability:** The `analyzeAudioFile` function in `services/geminiService.ts` was relying entirely on UI-level checks in `App.tsx` to validate that uploaded files were actually audio files (`audio/*` MIME type). If the API was called directly or if the UI validation was bypassed, it could attempt to process non-audio files.
 **Learning:** Depending solely on client-side UI validation is insufficient. Core services and backend-facing API wrappers must independently validate their inputs to ensure defense in depth. This prevents unexpected behavior or potential exploitation if the UI layer is circumvented.
 **Prevention:** Always enforce independent input validation at the service layer (e.g., MIME type checks before making external API calls), even if the UI also performs similar checks for user experience.
+
+## 2025-10-24 - Avoid Native Alert for Error Presentation
+**Vulnerability:** The application was using the native `window.alert()` function for handling file type validation errors during upload. Native alerts are blocking operations that pause JavaScript execution on the main thread, potentially causing the UI to freeze and leading to a disruptive or confusing user experience (especially since they don't look like part of the application).
+**Learning:** Native `alert()` calls block the main browser thread. This can negatively impact performance and cause poor user experiences. Error handling should be non-blocking and visually consistent with the application's overall design language.
+**Prevention:** Avoid using native `window.alert()` for error handling. Prefer using the application's centralized, non-blocking alert/toast UI mechanism (like `showAlert`) to present errors consistently without blocking the execution thread.
+
+## 2025-10-24 - Defense in Depth: Service-Level URL Validation
+**Vulnerability:** The `analyzeLink` function in `services/geminiService.ts` was passing the user-provided `url` directly into the Gemini prompt without validating it locally, relying entirely on UI-level checks in `App.tsx`. If the `analyzeLink` service method was called directly or if the UI validation was bypassed, it could allow unauthorized domains or schemes (SSRF/Prompt Injection risks) to reach the LLM.
+**Learning:** Depending solely on client-side UI validation is insufficient for security-critical parameters like URLs interacting with external systems or LLMs. Core services must independently validate their inputs.
+**Prevention:** Always enforce independent input validation at the service layer (e.g., using `validateAndNormalizeUrl` within the service function before executing the API request), providing defense in depth even when the UI has similar validation logic.
