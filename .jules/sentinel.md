@@ -31,3 +31,8 @@
 **Vulnerability:** The `analyzeAudioFile` function in `services/geminiService.ts` was relying entirely on UI-level checks in `App.tsx` to validate that uploaded files were actually audio files (`audio/*` MIME type). If the API was called directly or if the UI validation was bypassed, it could attempt to process non-audio files.
 **Learning:** Depending solely on client-side UI validation is insufficient. Core services and backend-facing API wrappers must independently validate their inputs to ensure defense in depth. This prevents unexpected behavior or potential exploitation if the UI layer is circumvented.
 **Prevention:** Always enforce independent input validation at the service layer (e.g., MIME type checks before making external API calls), even if the UI also performs similar checks for user experience.
+
+## 2025-06-10 - Defense in Depth: Service-Level URL Validation
+**Vulnerability:** The `analyzeLink` function in `services/geminiService.ts` was relying entirely on UI-level checks (if any) or assuming valid URL inputs. If the API was called directly or if the UI validation was bypassed, it could attempt to process arbitrary URLs (including those vulnerable to SSRF or prompt injection).
+**Learning:** Depending solely on UI validation or missing service-level validation is insufficient. Core services and backend-facing API wrappers must independently validate their inputs to ensure defense in depth.
+**Prevention:** Always enforce independent input validation at the service layer (e.g., strict URL validation before making external API calls), even if the UI might perform similar checks.
