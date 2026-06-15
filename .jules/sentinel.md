@@ -31,3 +31,8 @@
 **Vulnerability:** The `analyzeAudioFile` function in `services/geminiService.ts` was relying entirely on UI-level checks in `App.tsx` to validate that uploaded files were actually audio files (`audio/*` MIME type). If the API was called directly or if the UI validation was bypassed, it could attempt to process non-audio files.
 **Learning:** Depending solely on client-side UI validation is insufficient. Core services and backend-facing API wrappers must independently validate their inputs to ensure defense in depth. This prevents unexpected behavior or potential exploitation if the UI layer is circumvented.
 **Prevention:** Always enforce independent input validation at the service layer (e.g., MIME type checks before making external API calls), even if the UI also performs similar checks for user experience.
+
+## 2025-05-30 - Defense in Depth: SSRF and Prompt Injection Mitigation in Service Layer
+**Vulnerability:** The `analyzeLink` function in `services/geminiService.ts` was passing the user-provided URL directly into the Gemini prompt without applying the application's domain allowlist (`validateAndNormalizeUrl`). While the UI layer performed validation, a direct API call or UI bypass could result in SSRF or Prompt Injection.
+**Learning:** Relying solely on client-side UI validation is insufficient for security-critical inputs. Backend or core service functions must independently validate inputs before using them, especially when interacting with external tools (like search) or LLMs.
+**Prevention:** Always enforce input validation (e.g., domain allowlisting) directly at the service layer where the external request is constructed, ensuring Defense in Depth against UI bypasses.
