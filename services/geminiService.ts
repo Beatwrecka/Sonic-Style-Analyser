@@ -2,6 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ANALYSIS_SCHEMA, ANALYSIS_SYSTEM_INSTRUCTION } from "../constants";
 import { MusicAnalysis } from "../types";
 import { logger } from "./logger";
+import { validateAndNormalizeUrl } from "./urlUtils";
 
 const getApiKey = (): string | undefined => {
   // Security Note: We only read VITE_GEMINI_API_KEY from import.meta.env
@@ -69,10 +70,13 @@ export const analyzeAudioFile = async (
 
 export const analyzeLink = async (url: string): Promise<MusicAnalysis> => {
   try {
+    // Defense in Depth: Validate URL at the service layer
+    const safeUrl = validateAndNormalizeUrl(url);
+
     const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview', // Can use search tools
-      contents: `You are a musicologist. I need you to analyze the track at this link: ${url}.
+      contents: `You are a musicologist. I need you to analyze the track at this link: ${safeUrl}.
       
       CRITICAL INSTRUCTION: You cannot "listen" to the link directly. You MUST use the Google Search tool to find the following information about this specific track:
       1. Artist Name and Track Title (Verify these match the link)
