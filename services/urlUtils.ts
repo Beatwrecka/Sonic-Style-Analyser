@@ -1,4 +1,9 @@
 export const validateAndNormalizeUrl = (urlString: string): string => {
+  // Prevent Denial of Service (DoS) by limiting URL length before processing
+  if (urlString.length > 2048) {
+    throw new Error("URL too long.");
+  }
+
   let parsedUrl: URL;
 
   try {
