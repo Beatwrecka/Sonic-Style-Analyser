@@ -25,6 +25,14 @@ test('validateAndNormalizeUrl - invalid format', () => {
   );
 });
 
+test('validateAndNormalizeUrl - excessive length', () => {
+  const longUrl = 'https://youtube.com/watch?v=' + 'a'.repeat(2048);
+  assert.throws(
+    () => validateAndNormalizeUrl(longUrl),
+    /URL exceeds maximum allowed length of 2048 characters./
+  );
+});
+
 test('validateAndNormalizeUrl - invalid protocol', () => {
   const invalidProtocolUrls = [
     'ftp://youtube.com/watch?v=123',
