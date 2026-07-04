@@ -1,4 +1,9 @@
 export const validateAndNormalizeUrl = (urlString: string): string => {
+  // Defense in Depth: Prevent DoS via resource exhaustion
+  if (urlString.length > 2048) {
+    throw new Error("URL exceeds maximum length of 2048 characters.");
+  }
+
   let parsedUrl: URL;
 
   try {
