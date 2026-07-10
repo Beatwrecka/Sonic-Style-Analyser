@@ -25,6 +25,14 @@ test('validateAndNormalizeUrl - invalid format', () => {
   );
 });
 
+test('validateAndNormalizeUrl - URL too long', () => {
+  const longUrl = 'https://youtube.com/watch?v=' + 'a'.repeat(2049);
+  assert.throws(
+    () => validateAndNormalizeUrl(longUrl),
+    /URL is too long/
+  );
+});
+
 test('validateAndNormalizeUrl - invalid protocol', () => {
   const invalidProtocolUrls = [
     'ftp://youtube.com/watch?v=123',
