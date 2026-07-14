@@ -18,6 +18,14 @@ test('validateAndNormalizeUrl - valid domains and protocols', () => {
   }
 });
 
+test('validateAndNormalizeUrl - URL too long', () => {
+  const longUrl = 'https://youtube.com/watch?v=' + 'a'.repeat(2048);
+  assert.throws(
+    () => validateAndNormalizeUrl(longUrl),
+    /URL is too long/
+  );
+});
+
 test('validateAndNormalizeUrl - invalid format', () => {
   assert.throws(
     () => validateAndNormalizeUrl('not a url'),
