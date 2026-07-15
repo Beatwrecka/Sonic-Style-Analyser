@@ -150,6 +150,7 @@ const App: React.FC = () => {
       logger.error("Link analysis failed", error);
       if (error instanceof Error) {
         if (
+          error.message === "URL exceeds maximum allowed length of 2048 characters." ||
           error.message === "Invalid URL protocol. Only http and https are allowed." ||
           error.message === "Invalid URL format." ||
           error.message.startsWith("Unauthorized domain.")

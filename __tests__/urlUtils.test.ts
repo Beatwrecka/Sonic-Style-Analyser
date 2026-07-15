@@ -2,6 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert';
 import { validateAndNormalizeUrl } from '../services/urlUtils.ts';
 
+test('validateAndNormalizeUrl - length limit', () => {
+  const longUrl = 'https://youtube.com/watch?v=' + 'a'.repeat(2048);
+  assert.throws(
+    () => validateAndNormalizeUrl(longUrl),
+    /URL exceeds maximum allowed length of 2048 characters\./
+  );
+
+  const validLengthUrl = 'https://youtube.com/watch?v=' + 'a'.repeat(2000);
+  assert.strictEqual(validateAndNormalizeUrl(validLengthUrl), validLengthUrl);
+});
+
 test('validateAndNormalizeUrl - valid domains and protocols', () => {
   const validUrls = [
     'https://youtube.com/watch?v=123',
