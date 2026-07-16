@@ -18,6 +18,14 @@ test('validateAndNormalizeUrl - valid domains and protocols', () => {
   }
 });
 
+test('validateAndNormalizeUrl - url length limit', () => {
+  const longUrl = 'https://youtube.com/watch?v=' + 'a'.repeat(2048);
+  assert.throws(
+    () => validateAndNormalizeUrl(longUrl),
+    /URL exceeds maximum allowed length of 2048 characters/
+  );
+});
+
 test('validateAndNormalizeUrl - invalid format', () => {
   assert.throws(
     () => validateAndNormalizeUrl('not a url'),
