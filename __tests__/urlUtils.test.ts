@@ -56,3 +56,11 @@ test('validateAndNormalizeUrl - unauthorized domains', () => {
     );
   }
 });
+
+test('validateAndNormalizeUrl - length limit', () => {
+  const longUrl = 'https://youtube.com/watch?v=' + 'a'.repeat(2048);
+  assert.throws(
+    () => validateAndNormalizeUrl(longUrl),
+    /URL exceeds maximum allowed length/
+  );
+});
