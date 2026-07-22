@@ -35,3 +35,8 @@
 **Vulnerability:** The `analyzeLink` function in `services/geminiService.ts` was relying on UI-level checks in `App.tsx` to validate user-provided URLs. If the API was called directly or the UI bypassed, unvalidated URLs could be processed, leading to SSRF or Prompt Injection.
 **Learning:** Depending solely on client-side UI validation is insufficient for security. Core services and backend-facing API wrappers must independently validate their inputs to ensure defense in depth, especially when those inputs are incorporated into LLM prompts or backend calls.
 **Prevention:** Always enforce independent input validation at the service layer (e.g., URL protocol and allowlist checks before making external API calls) using established utility functions, even if the UI also performs similar checks for user experience.
+
+## 2025-02-28 - Missing Input Length Limits and Resource Exhaustion
+**Vulnerability:** The application accepted user-provided URLs in `urlUtils.ts` without validating their length. An attacker could potentially submit an extremely long URL, which could lead to Denial of Service (DoS) via resource exhaustion when parsing or processing the URL.
+**Learning:** Failing to limit the length of user inputs exposes the application to resource exhaustion attacks, as complex operations on large strings can consume excessive memory and CPU.
+**Prevention:** Always implement an independent length validation check on user inputs (e.g., limiting URLs to 2048 characters) before performing any further processing or parsing.
