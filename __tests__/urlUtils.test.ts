@@ -41,6 +41,16 @@ test('validateAndNormalizeUrl - invalid protocol', () => {
   }
 });
 
+test('validateAndNormalizeUrl - excessive length', () => {
+  const base = 'https://youtube.com/watch?v=';
+  const longUrl = base + 'a'.repeat(2049 - base.length);
+
+  assert.throws(
+    () => validateAndNormalizeUrl(longUrl),
+    /URL exceeds maximum allowed length of 2048 characters\./
+  );
+});
+
 test('validateAndNormalizeUrl - unauthorized domains', () => {
   const unauthorizedUrls = [
     'https://example.com',
