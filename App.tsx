@@ -152,7 +152,8 @@ const App: React.FC = () => {
         if (
           error.message === "Invalid URL protocol. Only http and https are allowed." ||
           error.message === "Invalid URL format." ||
-          error.message.startsWith("Unauthorized domain.")
+          error.message.startsWith("Unauthorized domain.") ||
+          error.message === "URL exceeds maximum allowed length of 2048 characters."
         ) {
           showAlert('error', error.message);
         } else {
