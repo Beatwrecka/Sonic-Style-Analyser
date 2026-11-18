@@ -69,6 +69,8 @@ export const analyzeAudioFile = async (
 };
 
 export const analyzeLink = async (url: string): Promise<MusicAnalysis> => {
+  const safeUrl = validateAndNormalizeUrl(url);
+
   try {
     // Defense in Depth: Validate URL at the service layer
     const safeUrl = validateAndNormalizeUrl(url);
